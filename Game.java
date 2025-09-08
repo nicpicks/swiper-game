@@ -38,4 +38,31 @@ public class Game {
 			System.out.println();
 		}
 	}
+
+	static int[] mergeLeft(int[] row) {
+		int[] temp = new int[row.length];
+		int index = 0;
+		for (int i = 0; i < row.length; i++) {
+			if (row[i] != 0) {
+				temp[index++] = row[i];
+			}
+		}
+		
+		for (int i = 0; i < temp.length -1; i++) {
+			if (temp[i] != 0 && temp[i] == temp[i+1]) {
+				temp[i] *= 2;
+				temp[i+1] = 0;
+			}
+		}
+		
+		
+		int[] result = new int[row.length];
+		index = 0;
+		for (int i = 0; i < temp.length; i++) {
+			if (temp[i] != 0) {
+				result[index++] = temp[i];
+			}
+		}
+		return result;
+	}
 }

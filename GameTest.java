@@ -2,6 +2,7 @@ public class GameTest {
 
 	public static void main(String[] args) {
 		int failures = 0;
+		failures += mergeLeftTests();
 		failures += initBoardTests();
 
 		if (failures == 0) {
@@ -60,5 +61,72 @@ public class GameTest {
 		System.out.println("initBoard tests completed. Failures: " + failures);
 		return failures;
 	}
-}
 
+	private static int mergeLeftTests() {
+		int failures = 0;
+		System.out.println("Running mergeLeft tests:");
+
+		failures += assertArrayEquals(
+			"mergeLeft: [0,8,2,2] -> [8,4,0,0]",
+			new int[] {8, 4, 0, 0},
+			Game.mergeLeft(new int[] {0, 8, 2, 2})
+		);
+
+		failures += assertArrayEquals(
+			"mergeLeft: [4,2,0,2] -> [4,4,0,0]",
+			new int[] {4, 4, 0, 0},
+			Game.mergeLeft(new int[] {4, 2, 0, 2})
+		);
+
+        failures += assertArrayEquals(
+			"mergeLeft: [0,0,0,0] -> [0,0,0,0]",
+			new int[] {0, 0, 0, 0},
+			Game.mergeLeft(new int[] {0, 0, 0, 0})
+		);
+
+		failures += assertArrayEquals(
+			"mergeLeft: [0,0,0,2] -> [2,0,0,0]",
+			new int[] {2, 0, 0, 0},
+			Game.mergeLeft(new int[] {0, 0, 0, 2})
+		);
+
+		failures += assertArrayEquals(
+			"mergeLeft: [4,4,8,8] -> [8,16,0,0]",
+			new int[] {8, 16, 0, 0},
+			Game.mergeLeft(new int[] {4, 4, 8, 8})
+		);
+
+		System.out.println("mergeLeft tests completed. Failures: " + failures);
+		return failures;
+	}
+
+	private static int assertArrayEquals(String testName, int[] expected, int[] actual) {
+		if (!arraysEqual(expected, actual)) {
+			System.out.println("[FAIL] " + testName + "\n  expected: " + toString(expected) + "\n  actual:   " + toString(actual));
+			return 1;
+		}
+		return 0;
+	}
+
+	private static boolean arraysEqual(int[] a, int[] b) {
+		if (a == b) return true;
+		if (a == null || b == null) return false;
+		if (a.length != b.length) return false;
+		for (int i = 0; i < a.length; i++) {
+			if (a[i] != b[i]) return false;
+		}
+		return true;
+	}
+
+	private static String toString(int[] arr) {
+		if (arr == null) return "null";
+		StringBuilder sb = new StringBuilder();
+		sb.append('[');
+		for (int i = 0; i < arr.length; i++) {
+			if (i > 0) sb.append(',');
+			sb.append(arr[i]);
+		}
+		sb.append(']');
+		return sb.toString();
+	}
+}
