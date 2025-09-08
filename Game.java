@@ -6,7 +6,7 @@ import java.util.Random;
 public class Game {
 	private static int BOARD_SIZE = 4;
 	
-	private static int[][] initBoard() {
+	static int[][] initBoard() {
 		int[][] board = new int[BOARD_SIZE][BOARD_SIZE];
 		Random rand = new Random();
 		
