@@ -2,8 +2,9 @@ public class GameTest {
 
 	public static void main(String[] args) {
 		int failures = 0;
+        failures += initBoardTests();
 		failures += mergeLeftTests();
-		failures += initBoardTests();
+		failures += mergeRightTests();
 
 		if (failures == 0) {
 			System.out.println("All tests passed.");
@@ -97,6 +98,39 @@ public class GameTest {
 		);
 
 		System.out.println("mergeLeft tests completed. Failures: " + failures);
+		return failures;
+	}
+
+	private static int mergeRightTests() {
+		int failures = 0;
+		System.out.println("Running mergeRight tests:");
+
+		failures += assertArrayEquals(
+			"mergeRight: [null,8,2,2] -> [0,0,8,4]",
+			new int[] {0, 0, 8, 4},
+			Game.mergeRight(new int[] {0, 8, 2, 2})
+		);
+
+
+		failures += assertArrayEquals(
+			"mergeRight: [4,2,0,2] -> [0,0,4,4]",
+			new int[] {0, 0, 4, 4},
+			Game.mergeRight(new int[] {4, 2, 0, 2})
+		);
+
+		failures += assertArrayEquals(
+			"mergeRight: [0,0,0,0] -> [0,0,0,0]",
+			new int[] {0, 0, 0, 0},
+			Game.mergeRight(new int[] {0, 0, 0, 0})
+		);
+
+		failures += assertArrayEquals(
+			"mergeRight: [0,0,0,2] -> [0,0,0,2]",
+			new int[] {0, 0, 0, 2},
+			Game.mergeRight(new int[] {0, 0, 0, 2})
+		);
+
+		System.out.println("mergeRight tests completed. Failures: " + failures);
 		return failures;
 	}
 

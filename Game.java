@@ -65,4 +65,30 @@ public class Game {
 		}
 		return result;
 	}
+
+	static int[] mergeRight(int[] row) {
+		int[] temp = new int[row.length];
+		int index = row.length - 1;
+		for (int i = row.length - 1; i >= 0; i--) {
+			if (row[i] != 0) {
+				temp[index--] = row[i];
+			}
+		}
+
+		for (int i = temp.length - 1; i > 0; i--) {
+			if (temp[i] != 0 && temp[i] == temp[i - 1]) {
+				temp[i] *= 2;
+				temp[i - 1] = 0;
+			}
+		}
+
+		int[] result = new int[row.length];
+		index = row.length - 1;
+		for (int i = temp.length - 1; i >= 0; i--) {
+			if (temp[i] != 0) {
+				result[index--] = temp[i];
+			}
+		}
+		return result;
+	}
 }
