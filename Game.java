@@ -4,6 +4,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 
 public class Game {
 	private static final int BOARD_SIZE = 4;
@@ -38,7 +43,7 @@ public class Game {
 	}
 
 	public static void main(String[] args) {
-		System.out.println("Welcome to 2048! Use W/A/S/D to move, Q to quit.");
+		System.out.println("Welcome to 2048! Use W/A/S/D to move, H=hint, Q=quit.");
 		runInteractive();
 	}
 
@@ -70,7 +75,7 @@ public class Game {
 				break;
 			}
 
-			System.out.print("Move (W/A/S/D or Q): ");
+			System.out.print("Move (W/A/S/D, H=hint, Q=quit): ");
 			String line = scanner.nextLine();
 			if (line == null || line.isEmpty()) continue;
 			char ch = Character.toLowerCase(line.charAt(0));
@@ -85,8 +90,17 @@ public class Game {
 				case 'a': changed = moveLeft(board); break;
 				case 's': changed = moveDown(board); break;
 				case 'd': changed = moveRight(board); break;
+				case 'h': {
+					Character ai = suggestBestMove(board);
+					if (ai != null) {
+						System.out.println("AI hint: " + Character.toUpperCase(ai));
+					} else {
+						System.out.println("AI hint unavailable (is Ollama running?).");
+					}
+					break;
+				}
 				default:
-					System.out.println("Invalid input. Only use W/A/S/D or Q.");
+					System.out.println("Invalid input. Only use W/A/S/D, H or Q.");
 			}
 
 			if (changed) {
@@ -112,7 +126,6 @@ public class Game {
 				temp[i+1] = 0;
 			}
 		}
-		
 		
 		int[] result = new int[row.length];
 		index = 0;
@@ -309,5 +322,78 @@ public class Game {
 			}
 		}
 		return false;
+	}
+
+	private static Character suggestBestMove(int[][] board) {
+		try {
+			String endpoint = System.getenv("OLLAMA_HOST");
+			if (endpoint == null || endpoint.isEmpty()) {
+				endpoint = "http://localhost:11434";
+			}
+			String model = System.getenv("OLLAMA_MODEL");
+			if (model == null || model.isEmpty()) {
+				model = "2048-move";
+			}
+
+			StringBuilder sb = new StringBuilder();
+			for (int r = 0; r < BOARD_SIZE; r++) {
+				for (int c = 0; c < BOARD_SIZE; c++) {
+					if (board[r][c] == 0) sb.append('.'); else sb.append(board[r][c]);
+					if (c < BOARD_SIZE - 1) sb.append('\t');
+				}
+				sb.append('\n');
+			}
+			String prompt = sb.toString();
+			String modelJson = "\"" + model.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+			String promptJson = "\"" + prompt
+				.replace("\\", "\\\\")
+				.replace("\"", "\\\"")
+				.replace("\n", "\\n")
+				.replace("\t", "\\t")
+				+ "\"";
+			String requestBody = "{" +
+				"\"model\":" + modelJson + "," +
+				"\"prompt\":" + promptJson + "," +
+				"\"stream\":false," +
+				"\"options\":{\"num_predict\":1}" +
+			"}";
+
+			HttpClient client = HttpClient.newBuilder()
+				.connectTimeout(Duration.ofSeconds(5))
+				.build();
+			HttpRequest req = HttpRequest.newBuilder()
+				.uri(URI.create(endpoint + "/api/generate"))
+				.timeout(Duration.ofSeconds(15))
+				.header("Content-Type", "application/json")
+				.POST(HttpRequest.BodyPublishers.ofString(requestBody))
+				.build();
+			HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
+
+			if (resp.statusCode() < 200 || resp.statusCode() >= 300) return null;
+
+			String body = resp.body();
+			Character move = extractMoveFromResponse(body);
+			return move;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	private static Character extractMoveFromResponse(String body) {
+		String text = body;
+		int key = body.indexOf("\"response\":");
+		if (key != -1) {
+			int start = body.indexOf('"', key + 11);
+			if (start != -1) {
+				int end = body.indexOf('"', start + 1);
+				if (end != -1) text = body.substring(start + 1, end);
+			}
+		}
+		text = text.trim();
+		if (!text.isEmpty()) {
+			char ch = Character.toLowerCase(text.charAt(0));
+			if (ch == 'w' || ch == 'a' || ch == 's' || ch == 'd') return ch;
+		}
+		return null;
 	}
 }
