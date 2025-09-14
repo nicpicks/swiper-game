@@ -6,6 +6,7 @@ import java.util.Random;
 
 public class Game {
 	private static final int BOARD_SIZE = 4;
+	private static final int SPAWN_FOUR_PERCENT = 10;
 
 	static enum GameStatus {
 		PLAYING,
@@ -165,6 +166,55 @@ public class Game {
 			}
 		}
 		return boardChanged;
+	}
+
+	static boolean spawnRandomTile(int[][] board, Random rand) {
+		List<Integer> empty = new ArrayList<>();
+		for (int row = 0; row < BOARD_SIZE; row++) {
+			for (int col = 0; col < BOARD_SIZE; col++) {
+				if (board[row][col] == 0) {
+					empty.add(row * BOARD_SIZE + col);
+				}
+			}
+		}
+		if (empty.isEmpty()) return false;
+
+		int pick = empty.get(rand.nextInt(empty.size()));
+		int row = pick / BOARD_SIZE;
+		int col = pick % BOARD_SIZE;
+		
+		int value = (rand.nextInt(100) < SPAWN_FOUR_PERCENT) ? 4 : 2;
+
+		board[row][col] = value;
+		return true;
+	}
+
+	static boolean spawnRandomTile(int[][] board) {
+		return spawnRandomTile(board, new Random());
+	}
+
+	static boolean moveLeft(int[][] board) {
+		boolean changed = slideLeft(board);
+		if (changed) spawnRandomTile(board);
+		return changed;
+	}
+
+	static boolean moveRight(int[][] board) {
+		boolean changed = slideRight(board);
+		if (changed) spawnRandomTile(board);
+		return changed;
+	}
+
+	static boolean moveUp(int[][] board) {
+		boolean changed = slideUp(board);
+		if (changed) spawnRandomTile(board);
+		return changed;
+	}
+
+	static boolean moveDown(int[][] board) {
+		boolean changed = slideDown(board);
+		if (changed) spawnRandomTile(board);
+		return changed;
 	}
 
 	static GameStatus evaluateGameStatus(int[][] board) {
