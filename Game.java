@@ -3,6 +3,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Game {
 	private static final int BOARD_SIZE = 4;
@@ -13,7 +14,7 @@ public class Game {
 		WON,
 		LOST
 	}
-	
+
 	static int[][] initBoard() {
 		int[][] board = new int[BOARD_SIZE][BOARD_SIZE];
 		Random rand = new Random();
@@ -35,11 +36,10 @@ public class Game {
 		}
 		return board;
 	}
-	
+
 	public static void main(String[] args) {
 		System.out.println("Welcome to 2048! Use W/A/S/D to move, Q to quit.");
-		int[][] board = initBoard();
-		printBoard(board);
+		runInteractive();
 	}
 
 	static void printBoard(int[][] board) {
@@ -51,6 +51,49 @@ public class Game {
 			}
 			System.out.println("|");
 			System.out.println("+----+----+----+----+");
+		}
+	}
+
+	static void runInteractive() {
+		int[][] board = initBoard();
+		printBoard(board);
+		Scanner scanner = new Scanner(System.in);
+		
+		while (true) {
+			GameStatus status = evaluateGameStatus(board);
+
+			if (status == GameStatus.WON) {
+				System.out.println("You won!");
+				break;
+			} else if (status == GameStatus.LOST) {
+				System.out.println("Game over!");
+				break;
+			}
+
+			System.out.print("Move (W/A/S/D or Q): ");
+			String line = scanner.nextLine();
+			if (line == null || line.isEmpty()) continue;
+			char ch = Character.toLowerCase(line.charAt(0));
+			if (ch == 'q') {
+				System.out.println("Quitting. Bye!");
+				break;
+			}
+
+			boolean changed = false;
+			switch (ch) {
+				case 'w': changed = moveUp(board); break;
+				case 'a': changed = moveLeft(board); break;
+				case 's': changed = moveDown(board); break;
+				case 'd': changed = moveRight(board); break;
+				default:
+					System.out.println("Invalid input. Only use W/A/S/D or Q.");
+			}
+
+			if (changed) {
+				printBoard(board);
+			} else if (ch == 'w' || ch == 'a' || ch == 's' || ch == 'd') {
+				System.out.println("No tiles moved. Try a different direction.");
+			}
 		}
 	}
 
