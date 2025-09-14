@@ -5,6 +5,7 @@ public class GameTest {
         failures += initBoardTests();
 		failures += mergeLeftTests();
 		failures += mergeRightTests();
+		failures += gameStatusTests();
 
 		if (failures == 0) {
 			System.out.println("All tests passed.");
@@ -60,6 +61,62 @@ public class GameTest {
 		}
 
 		System.out.println("initBoard tests completed. Failures: " + failures);
+		return failures;
+	}
+
+	private static int gameStatusTests() {
+		int failures = 0;
+		System.out.println("Running gameStatus tests:");
+
+		int[][] wonBoard = new int[][] {
+			{2, 4, 8, 16},
+			{2, 4, 8, 16},
+			{2, 4, 2048, 16},
+			{2, 4, 8, 16}
+		};
+		failures += assertEquals(
+			"gameStatus: WON when a 2048 value exists",
+			Game.GameStatus.WON,
+			Game.evaluateGameStatus(wonBoard)
+		);
+
+		int[][] playingWithEmpty = new int[][] {
+			{2, 4, 8, 16},
+			{2, 0, 8, 16},
+			{2, 4, 32, 16},
+			{2, 4, 8, 16}
+		};
+		failures += assertEquals(
+			"gameStatus: PLAYING when an empty cell exists",
+			Game.GameStatus.PLAYING,
+			Game.evaluateGameStatus(playingWithEmpty)
+		);
+
+		int[][] playingWithMergeable = new int[][] {
+			{2, 2, 4, 8},
+			{16, 32, 64, 128},
+			{256, 512, 4, 8},
+			{16, 32, 64, 128}
+		};
+		failures += assertEquals(
+			"gameStatus: PLAYING when a merge move is possible",
+			Game.GameStatus.PLAYING,
+			Game.evaluateGameStatus(playingWithMergeable)
+		);
+
+		int[][] lostBoard = new int[][] {
+			{2, 4, 8, 16},
+			{32, 64, 128, 256},
+			{4, 8, 16, 32},
+			{64, 128, 256, 512}
+		};
+		failures += assertEquals(
+			"gameStatus: LOST when no empty cells and no possible merges",
+			Game.GameStatus.LOST,
+			Game.evaluateGameStatus(lostBoard)
+		);
+
+		System.out.println("gameStatus tests completed. Failures: " + failures);
 		return failures;
 	}
 
@@ -140,6 +197,13 @@ public class GameTest {
 			return 1;
 		}
 		return 0;
+	}
+
+	private static int assertEquals(String testName, Object expected, Object actual) {
+		if (expected == actual) return 0;
+		if (expected != null && expected.equals(actual)) return 0;
+		System.out.println("[FAIL] " + testName + "\n  expected: " + expected + "\n  actual:   " + actual);
+		return 1;
 	}
 
 	private static boolean arraysEqual(int[] a, int[] b) {
