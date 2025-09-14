@@ -37,13 +37,20 @@ public class Game {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println("Welcome to 2048!");
+		System.out.println("Welcome to 2048! Use W/A/S/D to move, Q to quit.");
 		int[][] board = initBoard();
-		for (int[] row : board) {
-			for (int val : row) {
-				System.out.print(val + " ");
+		printBoard(board);
+	}
+
+	static void printBoard(int[][] board) {
+		System.out.println("+----+----+----+----+");
+		for (int r = 0; r < BOARD_SIZE; r++) {
+			for (int c = 0; c < BOARD_SIZE; c++) {
+				String cell = board[r][c] == 0 ? "." : Integer.toString(board[r][c]);
+				System.out.printf("|%4s", cell);
 			}
-			System.out.println();
+			System.out.println("|");
+			System.out.println("+----+----+----+----+");
 		}
 	}
 
