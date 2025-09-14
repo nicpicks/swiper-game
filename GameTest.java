@@ -5,6 +5,7 @@ public class GameTest {
         failures += initBoardTests();
 		failures += mergeLeftTests();
 		failures += mergeRightTests();
+		failures += mergeUpDownTests();
 		failures += gameStatusTests();
 
 		if (failures == 0) {
@@ -188,6 +189,38 @@ public class GameTest {
 		);
 
 		System.out.println("mergeRight tests completed. Failures: " + failures);
+		return failures;
+	}
+
+	private static int mergeUpDownTests() {
+		int failures = 0;
+		System.out.println("Running mergeUp/mergeDown tests:");
+
+		failures += assertArrayEquals(
+			"mergeUp: [0,8,2,2] -> [8,4,0,0]",
+			new int[] {8, 4, 0, 0},
+			Game.mergeUp(new int[] {0, 8, 2, 2})
+		);
+
+		failures += assertArrayEquals(
+			"mergeUp: [4,2,0,2] -> [4,4,0,0]",
+			new int[] {4, 4, 0, 0},
+			Game.mergeUp(new int[] {4, 2, 0, 2})
+		);
+
+		failures += assertArrayEquals(
+			"mergeDown: [0,8,2,2] -> [0,0,8,4]",
+			new int[] {0, 0, 8, 4},
+			Game.mergeDown(new int[] {0, 8, 2, 2})
+		);
+
+		failures += assertArrayEquals(
+			"mergeDown: [4,2,0,2] -> [0,0,4,4]",
+			new int[] {0, 0, 4, 4},
+			Game.mergeDown(new int[] {4, 2, 0, 2})
+		);
+
+		System.out.println("mergeUp/mergeDown tests completed. Failures: " + failures);
 		return failures;
 	}
 

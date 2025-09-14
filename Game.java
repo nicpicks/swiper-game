@@ -98,6 +98,14 @@ public class Game {
 		return result;
 	}
 
+	static int[] mergeUp(int[] column) {
+		return mergeLeft(column);
+	}
+
+	static int[] mergeDown(int[] column) {
+		return mergeRight(column);
+	}
+
 	static GameStatus evaluateGameStatus(int[][] board) {
 		if (hasValue(board, 2048)) {
 			return GameStatus.WON;
