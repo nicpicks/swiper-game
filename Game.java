@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -104,6 +105,66 @@ public class Game {
 
 	static int[] mergeDown(int[] column) {
 		return mergeRight(column);
+	}
+
+	static boolean slideLeft(int[][] board) {
+		boolean boardChanged = false;
+		for (int r = 0; r < BOARD_SIZE; r++) {
+			int[] merged = mergeLeft(board[r]);
+			if (!Arrays.equals(board[r], merged)) {
+				board[r] = merged;
+				boardChanged = true;
+			}
+		}
+		return boardChanged;
+	}
+
+	static boolean slideRight(int[][] board) {
+		boolean boardChanged = false;
+		for (int r = 0; r < BOARD_SIZE; r++) {
+			int[] merged = mergeRight(board[r]);
+			if (!Arrays.equals(board[r], merged)) {
+				board[r] = merged;
+				boardChanged = true;
+			}
+		}
+		return boardChanged;
+	}
+
+	static boolean slideUp(int[][] board) {
+		boolean boardChanged = false;
+		for (int c = 0; c < BOARD_SIZE; c++) {
+			int[] column = new int[BOARD_SIZE];
+			for (int r = 0; r < BOARD_SIZE; r++) {
+				column[r] = board[r][c];
+			}
+
+			int[] merged = mergeUp(column);
+
+			if (!Arrays.equals(column, merged)) {
+				for (int r = 0; r < BOARD_SIZE; r++) board[r][c] = merged[r];
+				boardChanged = true;
+			}
+		}
+		return boardChanged;
+	}
+
+	static boolean slideDown(int[][] board) {
+		boolean boardChanged = false;
+		for (int c = 0; c < BOARD_SIZE; c++) {
+			int[] column = new int[BOARD_SIZE];
+			for (int r = 0; r < BOARD_SIZE; r++) {
+				column[r] = board[r][c];
+			}
+
+			int[] merged = mergeDown(column);
+
+			if (!Arrays.equals(column, merged)) {
+				for (int r = 0; r < BOARD_SIZE; r++) board[r][c] = merged[r];
+				boardChanged = true;
+			}
+		}
+		return boardChanged;
 	}
 
 	static GameStatus evaluateGameStatus(int[][] board) {

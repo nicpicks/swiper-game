@@ -6,6 +6,7 @@ public class GameTest {
 		failures += mergeLeftTests();
 		failures += mergeRightTests();
 		failures += mergeUpDownTests();
+		failures += slideTests();
 		failures += gameStatusTests();
 
 		if (failures == 0) {
@@ -62,6 +63,66 @@ public class GameTest {
 		}
 
 		System.out.println("initBoard tests completed. Failures: " + failures);
+		return failures;
+	}
+
+	private static int slideTests() {
+		int failures = 0;
+		System.out.println("Running slide tests:");
+
+		// slideLeft
+		int[][] board1 = new int[][] {
+			{0, 8, 2, 2},
+			{4, 2, 0, 2},
+			{0, 0, 0, 0},
+			{4, 4, 8, 8}
+		};
+		Game.slideLeft(board1);
+		failures += assertArrayEquals("slideLeft row0", new int[] {8, 4, 0, 0}, board1[0]);
+		failures += assertArrayEquals("slideLeft row1", new int[] {4, 4, 0, 0}, board1[1]);
+		failures += assertArrayEquals("slideLeft row2", new int[] {0, 0, 0, 0}, board1[2]);
+		failures += assertArrayEquals("slideLeft row3", new int[] {8, 16, 0, 0}, board1[3]);
+
+		// slideRight
+		int[][] board2 = new int[][] {
+			{0, 8, 2, 2},
+			{4, 2, 0, 2},
+			{0, 0, 0, 0},
+			{4, 4, 8, 8}
+		};
+		Game.slideRight(board2);
+		failures += assertArrayEquals("slideRight row0", new int[] {0, 0, 8, 4}, board2[0]);
+		failures += assertArrayEquals("slideRight row1", new int[] {0, 0, 4, 4}, board2[1]);
+		failures += assertArrayEquals("slideRight row2", new int[] {0, 0, 0, 0}, board2[2]);
+		failures += assertArrayEquals("slideRight row3", new int[] {0, 0, 8, 16}, board2[3]);
+
+		// slideUp
+		int[][] board3 = new int[][] {
+			{0, 8, 2, 2},
+			{4, 2, 0, 2},
+			{0, 0, 0, 0},
+			{4, 4, 8, 8}
+		};
+		Game.slideUp(board3);
+		failures += assertArrayEquals("slideUp col0", new int[] {8, 0, 0, 0}, new int[] {board3[0][0], board3[1][0], board3[2][0], board3[3][0]});
+		failures += assertArrayEquals("slideUp col1", new int[] {8, 2, 4, 0}, new int[] {board3[0][1], board3[1][1], board3[2][1], board3[3][1]});
+		failures += assertArrayEquals("slideUp col2", new int[] {2, 8, 0, 0}, new int[] {board3[0][2], board3[1][2], board3[2][2], board3[3][2]});
+		failures += assertArrayEquals("slideUp col3", new int[] {4, 8, 0, 0}, new int[] {board3[0][3], board3[1][3], board3[2][3], board3[3][3]});
+
+		// slideDown
+		int[][] board4 = new int[][] {
+			{0, 8, 2, 2},
+			{4, 2, 0, 2},
+			{0, 0, 0, 0},
+			{4, 4, 8, 8}
+		};
+		Game.slideDown(board4);
+		failures += assertArrayEquals("slideDown col0", new int[] {0, 0, 0, 8}, new int[] {board4[0][0], board4[1][0], board4[2][0], board4[3][0]});
+		failures += assertArrayEquals("slideDown col1", new int[] {0, 8, 2, 4}, new int[] {board4[0][1], board4[1][1], board4[2][1], board4[3][1]});
+		failures += assertArrayEquals("slideDown col2", new int[] {0, 0, 2, 8}, new int[] {board4[0][2], board4[1][2], board4[2][2], board4[3][2]});
+		failures += assertArrayEquals("slideDown col3", new int[] {0, 0, 4, 8}, new int[] {board4[0][3], board4[1][3], board4[2][3], board4[3][3]});
+
+		System.out.println("slide tests completed. Failures: " + failures);
 		return failures;
 	}
 
